@@ -99,7 +99,7 @@ GOOGLE_CLIENT_ID=your_google_client_id.apps.googleusercontent.com
 Create a `.env` file in the `client` directory:
 
 ```env
-REACT_APP_API_URL=http://localhost:3001
+REACT_APP_API_URL=https://task-manager-custom.onrender.com
 REACT_APP_GOOGLE_CLIENT_ID=your_google_client_id.apps.googleusercontent.com
 ```
 
@@ -126,7 +126,7 @@ npm install
 npm start
 ```
 
-_The server will start on `http://localhost:3001` và connect to MongoDB._
+_The server will start on `https://task-manager-custom.onrender.com` và connect to MongoDB._
 
 ### 3. Run the Frontend (Client)
 
@@ -138,7 +138,7 @@ npm install --legacy-peer-deps
 npm start
 ```
 
-_The React app will launch in your browser at `http://localhost:3000`._
+_The React app will launch in your browser at `https://task-manager-custom.onrender.com`._
 
 > **Important**: The `--legacy-peer-deps` flag is required because of a peer dependency conflict between React 17 and `@atlaskit/css-reset`.
 
