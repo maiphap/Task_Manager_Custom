@@ -1,0 +1,77 @@
+<svg width="320" height="120" viewBox="0 0 320 120"
+xmlns="http://www.w3.org/2000/svg">
+
+<style>
+.title{
+  font-family: Arial, sans-serif;
+  font-weight:700;
+  font-size:28px;
+  fill:#2563eb;
+  opacity:0;
+  animation: fadeIn 1.5s ease forwards;
+  animation-delay:1s;
+}
+
+.subtitle{
+  font-family: Arial, sans-serif;
+  font-size:12px;
+  fill:#6b7280;
+  opacity:0;
+  animation: fadeIn 1.5s ease forwards;
+  animation-delay:1.3s;
+}
+
+.box{
+  fill:none;
+  stroke:#2563eb;
+  stroke-width:3;
+  stroke-dasharray:200;
+  stroke-dashoffset:200;
+  animation: draw 1.2s ease forwards;
+}
+
+.check{
+  fill:none;
+  stroke:#16a34a;
+  stroke-width:3;
+  stroke-dasharray:50;
+  stroke-dashoffset:50;
+  animation: draw 0.8s ease forwards;
+  animation-delay:0.8s;
+}
+
+@keyframes draw{
+  to{
+    stroke-dashoffset:0;
+  }
+}
+
+@keyframes fadeIn{
+  to{
+    opacity:1;
+  }
+}
+</style>
+
+<!-- checklist box -->
+<rect class="box" x="20" y="25" width="50" height="50" rx="8"/>
+
+<!-- lines -->
+<line x1="35" y1="40" x2="60" y2="40" stroke="#2563eb" stroke-width="2"/>
+<line x1="35" y1="50" x2="60" y2="50" stroke="#2563eb" stroke-width="2"/>
+<line x1="35" y1="60" x2="60" y2="60" stroke="#2563eb" stroke-width="2"/>
+
+<!-- animated checkmark -->
+<path class="check" d="M30 50 L38 58 L50 40"/>
+
+<!-- title -->
+<text class="title" x="90" y="55">
+TASK MANAGER
+</text>
+
+<!-- subtitle -->
+<text class="subtitle" x="90" y="75">
+organize • track • complete
+</text>
+
+</svg>
