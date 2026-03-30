@@ -12,11 +12,12 @@ const auth = require('./Middlewares/auth');
 dotenv.config();
 const app = express();
 
+// Cấu hình CORS chi tiết
 const allowedOrigins = [
     'http://localhost:3000', // Cho môi trường local
-    'https://task-manager-custom.vercel.app',
-    'https://task-manager-custom-card.vercel.app',
+    'https://task-manager-custom.onrender.com',
     'https://task-manager-custom-sand.vercel.app' // Thêm domain mới của bạn vào đây
+	
 ];
 
 app.use(cors({
