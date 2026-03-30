@@ -12,7 +12,24 @@ const auth = require('./Middlewares/auth');
 dotenv.config();
 const app = express();
 
-app.use(cors());
+const allowedOrigins = [
+    'http://localhost:3000', // Cho môi trường local
+    'https://task-manager-custom.vercel.app',
+    'https://task-manager-custom-card.vercel.app',
+    'https://task-manager-custom-sand.vercel.app' // Thêm domain mới của bạn vào đây
+];
+
+app.use(cors({
+    origin: function (origin, callback) {
+        // Cho phép các yêu cầu không có origin (như Postman, mobile apps)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) === -1) {
+            const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+            return callback(new Error(msg), false);
+        }
+        return callback(null, true);
+    }
+}));
 app.use(express.json());
 
 // AUTH VERIFICATION AND UNLESS
