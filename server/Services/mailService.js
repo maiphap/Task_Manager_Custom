@@ -8,8 +8,30 @@ const transporter = nodemailer.createTransport({
 	},
 });
 
+const DEFAULT_PROD_CLIENT_URL = 'https://task-manager-custom-sand.vercel.app';
+
+const resolveClientUrl = () => {
+	const configuredUrl = process.env.CLIENT_URL || process.env.FRONTEND_URL || process.env.APP_URL;
+
+	if (!configuredUrl) {
+		return DEFAULT_PROD_CLIENT_URL;
+	}
+
+	const normalizedUrl = configuredUrl.trim().replace(/\/$/, '');
+	const isLocalhostUrl = /localhost|127\.0\.0\.1/.test(normalizedUrl);
+	const isProduction = process.env.NODE_ENV === 'production';
+
+	if (isProduction && isLocalhostUrl) {
+		console.warn('CLIENT_URL is set to localhost in production. Falling back to default deployed URL.');
+		return DEFAULT_PROD_CLIENT_URL;
+	}
+
+	return normalizedUrl;
+};
+
+
 const sendInvitationEmail = async (email, boardTitle) => {
-	const clientUrl = process.env.CLIENT_URL || 'https://task-manager-custom-sand.vercel.app';
+	const clientUrl = resolveClientUrl();
 	const mailOptions = {
 		from: process.env.EMAIL_USER,
 		to: email,
