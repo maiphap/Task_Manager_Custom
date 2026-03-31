@@ -9,7 +9,7 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendInvitationEmail = async (email, boardTitle) => {
-	const clientUrl = process.env.CLIENT_URL || 'http://localhost:3000';
+	const clientUrl = process.env.CLIENT_URL || 'https://task-manager-custom-sand.vercel.app';
 	const mailOptions = {
 		from: process.env.EMAIL_USER,
 		to: email,
