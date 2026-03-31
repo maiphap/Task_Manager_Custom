@@ -22,7 +22,8 @@ const allowedOrigins = [
 	'https://task-manager-custom-git-main-maiphaps-projects.vercel.app',
     'https://task-manager-custom-card.vercel.app',
     'https://task-manager-custom-sand.vercel.app', // Thêm domain mới của bạn vào đây
-	'https://task-manager-custom.onrender.com'
+	'https://task-manager-custom.onrender.com',
+	'https://task-manager-custom-maiphaps-projects.vercel.app' // Link frontend mới của bạn
 ];
 
 app.use(cors({
