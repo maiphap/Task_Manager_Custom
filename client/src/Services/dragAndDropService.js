@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { updateCardDragDrop, updateListDragDrop } from '../Redux/Slices/listSlice';
 import { openAlert } from '../Redux/Slices/alertSlice';
+import socket from './socketService';
 
 const baseUrl = process.env.REACT_APP_API_URL + '/list';
 
@@ -60,6 +61,7 @@ export const updateCardOrder = async (props, dispatch) => {
 	);
 	try {
 		await submitCall;
+		socket.emit('move_card', { boardId: props.boardId, updatedLists: tempList });
 	} catch (error) {
 		await dispatch(updateCardDragDrop(savedList));
 		dispatch(
@@ -96,6 +98,7 @@ export const updateListOrder = async (props, dispatch) => {
 	);
 	try {
 		await submitCall;
+		socket.emit('move_list', { boardId: props.boardId, updatedLists: tempList });
 	} catch (error) {
 		await dispatch(updateCardDragDrop(savedOrder));
 		dispatch(

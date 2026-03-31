@@ -10,6 +10,8 @@ import { getLists } from '../../../Services/boardService';
 import { updateCardOrder, updateListOrder } from '../../../Services/dragAndDropService';
 import LoadingScreen from '../../LoadingScreen';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
+import socket from '../../../Services/socketService';
+import { updateCardDragDrop } from '../../../Redux/Slices/listSlice';
 
 const Board = (props) => {
 	/* props.match.params.id */
@@ -21,6 +23,16 @@ const Board = (props) => {
 	useEffect(() => {
 		getBoard(props.match.params.id, dispatch);
 		getLists(boardId, dispatch);
+
+		// Xử lý realtime
+		socket.emit('join_board', boardId);
+		socket.on('update_board_request', (updatedLists) => {
+			dispatch(updateCardDragDrop(updatedLists));
+		});
+
+		return () => {
+			socket.off('update_board_request');
+		};
 	}, [props.match.params.id, dispatch, boardId]);
 
 	useEffect(() => {

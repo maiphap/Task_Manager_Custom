@@ -1,8 +1,10 @@
 const dotenv = require('dotenv');
 const express = require('express');
+const http = require('http');
 const unless = require('express-unless');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const { Server } = require('socket.io');
 const userRoute = require('./Routes/userRoute');
 const boardRoute = require('./Routes/boardRoute');
 const listRoute = require('./Routes/listRoute');
@@ -11,6 +13,7 @@ const auth = require('./Middlewares/auth');
 
 dotenv.config();
 const app = express();
+const server = http.createServer(app);
 
 // Cấu hình CORS chi tiết
 const allowedOrigins = [
@@ -77,6 +80,37 @@ app.get('/', (req, res) => {
 	res.send('Task Manager Backend is running!');
 });
 
-app.listen(process.env.PORT, () => {
+// Khởi tạo Socket.IO với cấu hình CORS
+const io = new Server(server, {
+	cors: {
+		origin: allowedOrigins,
+		methods: ['GET', 'POST', 'PUT', 'DELETE'],
+	},
+});
+
+io.on('connection', (socket) => {
+	// console.log('A user connected:', socket.id);
+
+	socket.on('join_board', (boardId) => {
+		socket.join(boardId);
+		// console.log(`User ${socket.id} joined board ${boardId}`);
+	});
+
+	socket.on('move_card', (data) => {
+		// Phát sự kiện cập nhật cho những người khác trong cùng board
+		socket.to(data.boardId).emit('update_board_request', data.updatedLists);
+	});
+
+	socket.on('move_list', (data) => {
+		// Phát sự kiện cập nhật cho những người khác trong cùng board
+		socket.to(data.boardId).emit('update_board_request', data.updatedLists);
+	});
+
+	socket.on('disconnect', () => {
+		// console.log('A user disconnected:', socket.id);
+	});
+});
+
+server.listen(process.env.PORT, () => {
 	console.log(`Server is online! Port: ${process.env.PORT}`);
 });
