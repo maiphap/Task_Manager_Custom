@@ -65,10 +65,72 @@ const createGoogleUser = async (user, callback) => {
   }
 };
 
+const getAllUsers = async (callback) => {
+  try {
+    let users = await userModel.find({});
+    users.forEach(user => {
+      user.password = undefined;
+    });
+    return callback(false, users);
+  } catch (err) {
+    return callback({
+      errMessage: "Something went wrong",
+      details: err.message,
+    });
+  }
+};
+
+const deleteUserByAdmin = async (id, callback) => {
+  try {
+    const user = await userModel.findById(id);
+    if (!user) return callback({ errMessage: "User not found!" });
+
+    // Xóa user khỏi tất cả các boards mà họ tham gia
+    const boardModel = require("../Models/boardModel");
+    await boardModel.updateMany(
+      { "members.user": id },
+      { $pull: { members: { user: id } } }
+    );
+
+    await user.remove();
+    return callback(false, { message: "User deleted successfully!" });
+  } catch (err) {
+    return callback({
+      errMessage: "Something went wrong",
+      details: err.message,
+    });
+  }
+};
+
+const getAdminStats = async (callback) => {
+  try {
+    const boardModel = require("../Models/boardModel");
+    const cardModel = require("../Models/cardModel");
+
+    const userCount = await userModel.countDocuments();
+    const boardCount = await boardModel.countDocuments();
+    const cardCount = await cardModel.countDocuments();
+
+    return callback(false, {
+      users: userCount,
+      boards: boardCount,
+      cards: cardCount,
+    });
+  } catch (err) {
+    return callback({
+      errMessage: "Something went wrong",
+      details: err.message,
+    });
+  }
+};
+
 module.exports = {
   register,
   login,
   getUser,
   getUserWithMail,
   createGoogleUser,
+  getAllUsers,
+  deleteUserByAdmin,
+  getAdminStats,
 };

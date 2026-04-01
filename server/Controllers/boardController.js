@@ -21,8 +21,9 @@ const getAll = async (req, res) => {
 
 const getById = async (req, res) => {
 	// Validate whether params.id is in the user's boards or not
-	const validate = req.user.boards.filter((board) => board === req.params.id);
-	if (!validate)
+	// Admin can bypass this check
+	const validate = req.user.boards.filter((board) => board.toString() === req.params.id);
+	if (validate.length === 0 && req.user.role !== 'admin')
 		return res.status(400).send({ errMessage: 'You can not show the this board, you are not a member or owner!' });
 
 	// Call the service
@@ -34,8 +35,8 @@ const getById = async (req, res) => {
 
 const getActivityById = async (req, res) => {
 	// Validate whether params.id is in the user's boards or not
-	const validate = req.user.boards.filter((board) => board === req.params.id);
-	if (!validate)
+	const validate = req.user.boards.filter((board) => board.toString() === req.params.id);
+	if (validate.length === 0 && req.user.role !== 'admin')
 		return res.status(400).send({ errMessage: 'You can not show the this board, you are not a member or owner!' });
 
 	// Call the service
@@ -109,6 +110,13 @@ const addMember = async (req, res) => {
 	});
 };
 
+const getAllAdmin = async (req, res) => {
+	await boardService.getAllAdmin((err, result) => {
+		if (err) return res.status(400).send(err);
+		return res.status(200).send(result);
+	});
+};
+
 module.exports = {
 	create,
 	getAll,
@@ -118,4 +126,5 @@ module.exports = {
 	updateBoardDescription,
 	updateBackground,
 	addMember,
+	getAllAdmin,
 };

@@ -158,10 +158,35 @@ const googleLogin = async (req, res) => {
   }
 };
 
+const getAllUsers = async (req, res) => {
+  await userService.getAllUsers((err, result) => {
+    if (err) return res.status(500).send(err);
+    return res.status(200).send(result);
+  });
+};
+
+const deleteUser = async (req, res) => {
+  const { id } = req.params;
+  await userService.deleteUserByAdmin(id, (err, result) => {
+    if (err) return res.status(500).send(err);
+    return res.status(200).send(result);
+  });
+};
+
+const getAdminStats = async (req, res) => {
+  await userService.getAdminStats((err, result) => {
+    if (err) return res.status(500).send(err);
+    return res.status(200).send(result);
+  });
+};
+
 module.exports = {
   register,
   login,
   getUser,
   getUserWithMail,
   googleLogin,
+  getAllUsers,
+  deleteUser,
+  getAdminStats,
 };

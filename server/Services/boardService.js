@@ -229,6 +229,20 @@ const addMember = async (id, members, user, callback) => {
 	}
 };
 
+const getAllAdmin = async (callback) => {
+	try {
+		const boards = await boardModel.find({});
+		// Delete unneccesary objects
+		boards.forEach((board) => {
+			board.activity = undefined;
+			board.lists = undefined;
+		});
+		return callback(false, boards);
+	} catch (error) {
+		return callback({ msg: 'Something went wrong', details: error.message });
+	}
+};
+
 module.exports = {
 	create,
 	getAll,
@@ -238,4 +252,5 @@ module.exports = {
 	updateBoardDescription,
 	updateBackground,
 	addMember,
+	getAllAdmin,
 };
