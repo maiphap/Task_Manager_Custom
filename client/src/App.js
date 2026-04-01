@@ -10,6 +10,9 @@ import { loadUser } from "./Services/userService";
 import { useDispatch } from "react-redux";
 import FreeRoute from "./Utils/FreeRoute";
 import Board from "./Components/Pages/BoardPage/Board";
+import AdminRoute from "./Utils/AdminRoute";
+import AdminDashboard from "./Components/Pages/AdminPage/AdminDashboard";
+
 const App = () => {
   const dispatch = useDispatch();
   useEffect(() => {
@@ -21,6 +24,7 @@ const App = () => {
       <Switch>
         <ProtectedRoute exact path="/boards" component={Boards} />
         <ProtectedRoute exact path="/board/:id" component={Board} />
+        <AdminRoute exact path="/admin" component={AdminDashboard} />
         <FreeRoute exact path="/login" component={Login} />
         <FreeRoute exact path="/register" component={Register} />
         <FreeRoute exact path="/" component={Index} />
