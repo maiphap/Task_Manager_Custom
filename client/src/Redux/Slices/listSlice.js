@@ -290,6 +290,7 @@ const listSlice = createSlice({
 				if (list._id === listId) {
 					list.cards = list.cards.map((card) => {
 						if (card._id === cardId) {
+							if (!card.date) card.date = {};
 							card.date.startDate = startDate;
 							card.date.dueDate = dueDate;
 							card.date.dueTime = dueTime;
@@ -307,6 +308,7 @@ const listSlice = createSlice({
 				if (list._id === listId) {
 					list.cards = list.cards.map((card) => {
 						if (card._id === cardId) {
+							if (!card.date) card.date = {};
 							card.date.completed = completed;
 						}
 						return card;
@@ -351,6 +353,23 @@ const listSlice = createSlice({
 						if (card._id === cardId) {
 							card.cover.color = color;
 							card.cover.isSizeOne = isSizeOne;
+							card.cover.image = null;
+						}
+						return card;
+					});
+				}
+				return list;
+			});
+		},
+		updateCoverImageOfCard: (state, action) => {
+			const { listId, cardId, image } = action.payload;
+			state.allLists = state.allLists.map((list) => {
+				if (list._id === listId) {
+					list.cards = list.cards.map((card) => {
+						if (card._id === cardId) {
+							card.cover.image = image;
+							card.cover.color = null;
+							card.cover.isSizeOne = null;
 						}
 						return card;
 					});
@@ -390,6 +409,7 @@ export const {
 	addAttachmentForCard,
 	deleteAttachmentOfCard,
 	updateCoverOfCard,
+	updateCoverImageOfCard,
 
 } = listSlice.actions;
 

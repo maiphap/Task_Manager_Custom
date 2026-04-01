@@ -72,10 +72,14 @@ const Card = (props) => {
 							style={getStyle(provided.draggableProps.style, snapshot)}
 							ref={provided.innerRef}
 							isDragging={snapshot.isDragging}
-							color={!card.cover.isSizeOne ? card.cover.color : '#fff'}
+							color={card.cover.image ? '#fff' : (!card.cover.isSizeOne ? card.cover.color : '#fff')}
 							padding={card.cover.color && card.cover.isSizeOne}
 						>
-							{card.cover.isSizeOne && <Cover color={card.cover.color} />}
+							{card.cover.image ? (
+								<img src={card.cover.image} alt="" style={{ width: '100%', maxHeight: '160px', objectFit: 'cover', borderRadius: '3px 3px 0 0', display: 'block' }} />
+							) : (
+								card.cover.isSizeOne && <Cover color={card.cover.color} />
+							)}
 							{labels && (
 								<LabelContainer>
 									{labels.map((label) => {

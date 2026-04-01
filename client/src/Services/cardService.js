@@ -1,4 +1,5 @@
 import axios from 'axios';
+import socket from './socketService';
 import { openAlert } from '../Redux/Slices/alertSlice';
 import {
 	setPending,
@@ -30,6 +31,7 @@ import {
 	deleteAttachment,
 	updateAttachment,
 	updateCover,
+	updateCoverImage,
 } from '../Redux/Slices/cardSlice';
 import {
 	addAttachmentForCard,
@@ -45,6 +47,7 @@ import {
 	setChecklistItemCompletedOfCard,
 	setChecklistItemTextOfCard,
 	updateCoverOfCard,
+	updateCoverImageOfCard,
 	updateDateCompletedOfCard,
 	updateDescriptionOfCard,
 	updateLabelOfCard,
@@ -91,6 +94,7 @@ export const titleUpdate = async (cardId, listId, boardId, title, dispatch) => {
 			axios.put(baseUrl + '/' + boardId + '/' + listId + '/' + cardId, { title: title })
 		);
 		await submitCall;
+			socket.emit('board_updated', boardId);
 	} catch (error) {
 		dispatch(
 			openAlert({
@@ -110,6 +114,7 @@ export const descriptionUpdate = async (cardId, listId, boardId, description, di
 			axios.put(baseUrl + '/' + boardId + '/' + listId + '/' + cardId, { description: description })
 		);
 		await submitCall;
+			socket.emit('board_updated', boardId);
 	} catch (error) {
 		dispatch(
 			openAlert({
@@ -138,6 +143,7 @@ export const comment = async (cardId, listId, boardId, text, userName, dispatch)
 
 		dispatch(addComment(response.data));
 		dispatch(setPending(false));
+			socket.emit('board_updated', boardId);
 	} catch (error) {
 		dispatch(setPending(false));
 		dispatch(
@@ -159,6 +165,7 @@ export const commentUpdate = async (cardId, listId, boardId, text, commentId, di
 			})
 		);
 		await submitCall;
+			socket.emit('board_updated', boardId);
 	} catch (error) {
 		dispatch(
 			openAlert({
@@ -177,6 +184,7 @@ export const commentDelete = async (cardId, listId, boardId, commentId, dispatch
 			axios.delete(baseUrl + '/' + boardId + '/' + listId + '/' + cardId + '/' + commentId)
 		);
 		await submitCall;
+			socket.emit('board_updated', boardId);
 	} catch (error) {
 		dispatch(
 			openAlert({
@@ -198,6 +206,7 @@ export const memberAdd = async (cardId, listId, boardId, memberId, memberName, m
 			})
 		);
 		await submitCall;
+			socket.emit('board_updated', boardId);
 	} catch (error) {
 		dispatch(
 			openAlert({
@@ -217,6 +226,7 @@ export const memberDelete = async (cardId, listId, boardId, memberId, memberName
 			axios.delete(baseUrl + '/' + boardId + '/' + listId + '/' + cardId + '/' + memberId + '/delete-member')
 		);
 		await submitCall;
+			socket.emit('board_updated', boardId);
 	} catch (error) {
 		dispatch(
 			openAlert({
@@ -249,6 +259,7 @@ export const labelCreate = async (cardId, listId, boardId, text, color, backColo
 		dispatch(
 			createLabelForCard({ listId, cardId, _id: response.data.labelId, text, color, backColor, selected: true })
 		);
+			socket.emit('board_updated', boardId);
 	} catch (error) {
 		dispatch(
 			openAlert({
@@ -277,6 +288,7 @@ export const labelUpdate = async (cardId, listId, boardId, labelId, label, dispa
 			axios.put(baseUrl + '/' + boardId + '/' + listId + '/' + cardId + '/' + labelId + '/update-label', label)
 		);
 		await submitCall;
+			socket.emit('board_updated', boardId);
 	} catch (error) {
 		dispatch(
 			openAlert({
@@ -296,6 +308,7 @@ export const labelDelete = async (cardId, listId, boardId, labelId, dispatch) =>
 			axios.delete(baseUrl + '/' + boardId + '/' + listId + '/' + cardId + '/' + labelId + '/delete-label')
 		);
 		await submitCall;
+			socket.emit('board_updated', boardId);
 	} catch (error) {
 		dispatch(
 			openAlert({
@@ -318,6 +331,7 @@ export const labelUpdateSelection = async (cardId, listId, boardId, labelId, sel
 			)
 		);
 		await submitCall;
+			socket.emit('board_updated', boardId);
 	} catch (error) {
 		dispatch(
 			openAlert({
@@ -346,6 +360,7 @@ export const checklistCreate = async (cardId, listId, boardId, title, dispatch) 
 
 		dispatch(updateCreatedChecklist(response.data.checklistId));
 		dispatch(createChecklistForCard({ listId, cardId, _id: response.data.checklistId, title }));
+			socket.emit('board_updated', boardId);
 	} catch (error) {
 		dispatch(
 			openAlert({
@@ -366,6 +381,7 @@ export const checklistDelete = async (cardId, listId, boardId, checklistId, disp
 			)
 		);
 		await submitCall;
+			socket.emit('board_updated', boardId);
 	} catch (error) {
 		dispatch(
 			openAlert({
@@ -407,6 +423,7 @@ export const checklistItemAdd = async (cardId, listId, boardId, checklistId, tex
 				text: text,
 			})
 		);
+			socket.emit('board_updated', boardId);
 	} catch (error) {
 		dispatch(
 			openAlert({
@@ -464,6 +481,7 @@ export const checklistItemCompletedSet = async (
 			)
 		);
 		await submitCall;
+			socket.emit('board_updated', boardId);
 	} catch (error) {
 		dispatch(
 			openAlert({
@@ -507,6 +525,7 @@ export const checklistItemTextSet = async (cardId, listId, boardId, checklistId,
 			)
 		);
 		await submitCall;
+			socket.emit('board_updated', boardId);
 	} catch (error) {
 		dispatch(
 			openAlert({
@@ -541,6 +560,7 @@ export const checklistItemDelete = async (cardId, listId, boardId, checklistId, 
 			)
 		);
 		await submitCall;
+			socket.emit('board_updated', boardId);
 	} catch (error) {
 		dispatch(
 			openAlert({
@@ -564,6 +584,7 @@ export const startDueDatesUpdate = async (cardId, listId, boardId, startDate, du
 			})
 		);
 		await submitCall;
+			socket.emit('board_updated', boardId);
 	} catch (error) {
 		dispatch(
 			openAlert({
@@ -585,6 +606,7 @@ export const dateCompletedUpdate = async (cardId, listId, boardId, completed, di
 			})
 		);
 		await submitCall;
+			socket.emit('board_updated', boardId);
 	} catch (error) {
 		dispatch(
 			openAlert({
@@ -623,6 +645,7 @@ export const attachmentAdd = async (cardId, listId, boardId, link, name, dispatc
 				date: Date(),
 			})
 		);
+			socket.emit('board_updated', boardId);
 	} catch (error) {
 		dispatch(
 			openAlert({
@@ -644,6 +667,7 @@ export const attachmentDelete = async (cardId, listId, boardId, attachmentId, di
 			)
 		);
 		await submitCall;
+			socket.emit('board_updated', boardId);
 	} catch (error) {
 		dispatch(
 			openAlert({
@@ -665,6 +689,7 @@ export const attachmentUpdate = async (cardId, listId, boardId, attachmentId, li
 			)
 		);
 		await submitCall;
+			socket.emit('board_updated', boardId);
 	} catch (error) {
 		dispatch(
 			openAlert({
@@ -687,6 +712,31 @@ export const coverUpdate = async (cardId, listId, boardId, color, isSizeOne, dis
 			})
 		);
 		await submitCall;
+			socket.emit('board_updated', boardId);
+	} catch (error) {
+		dispatch(
+			openAlert({
+				message: error?.response?.data?.errMessage ? error.response.data.errMessage : error.message,
+				severity: 'error',
+			})
+		);
+	}
+};
+export const coverImageUpload = async (cardId, listId, boardId, file, dispatch) => {
+	try {
+		const formData = new FormData();
+		formData.append('coverImage', file);
+
+		const response = await axios.post(
+			baseUrl + '/' + boardId + '/' + listId + '/' + cardId + '/upload-cover',
+			formData,
+			{ headers: { 'Content-Type': 'multipart/form-data' } }
+		);
+
+		const imageUrl = response.data.imageUrl;
+		dispatch(updateCoverImage(imageUrl));
+		dispatch(updateCoverImageOfCard({ listId, cardId, image: imageUrl }));
+		socket.emit('board_updated', boardId);
 	} catch (error) {
 		dispatch(
 			openAlert({

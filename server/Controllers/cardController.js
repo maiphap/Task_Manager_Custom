@@ -395,6 +395,31 @@ const updateCover = async (req, res) => {
 	);
 };
 
+const uploadCoverImage = async (req, res) => {
+	// Get params
+	const user = req.user;
+	const { boardId, listId, cardId } = req.params;
+
+	if (!req.file) {
+		return res.status(400).send({ errMessage: 'No file uploaded' });
+	}
+
+	const imageUrl = req.file.path; // Cloudinary URL
+
+	// Call the card service
+	await cardService.uploadCoverImage(
+		cardId,
+		listId,
+		boardId,
+		user,
+		imageUrl,
+		(err, result) => {
+			if (err) return res.status(500).send(err);
+			return res.status(200).send(result);
+		}
+	);
+};
+
 module.exports = {
 	create,
 	deleteById,
@@ -421,4 +446,5 @@ module.exports = {
 	deleteAttachment,
 	updateAttachment,
 	updateCover,
+	uploadCoverImage,
 };

@@ -24,6 +24,7 @@ const LabelsPopover = (props) => {
 	const { currentPage } = props;
 	const dispatch = useDispatch();
 	const thisCard = useSelector((state) => state.card);
+	const allLists = useSelector((state) => state.list.allLists);
 	const [selectedCard, setSelectedCard] = useState({ _id: '', color: '', text: '', backColor: '' });
 	const colors = thisCard.colors;
 
@@ -47,8 +48,12 @@ const LabelsPopover = (props) => {
 		);
 	};
 
-	const handleColorBoxClick = async (labelId, selected) => {
-		await labelUpdateSelection(thisCard.cardId, thisCard.listId, thisCard.boardId, labelId, selected, dispatch);
+	const handleColorBoxClick = async (labelId, selected, labelProps) => {
+		if (labelId) {
+			await labelUpdateSelection(thisCard.cardId, thisCard.listId, thisCard.boardId, labelId, selected, dispatch);
+		} else {
+			await handleCreateClick(labelProps.text, labelProps.color, labelProps.backColor);
+		}
 	};
 
 	const handleDeleteClick = async (labelId) => {
@@ -64,14 +69,16 @@ const LabelsPopover = (props) => {
 					bg={props.color}
 					hbg={props.backColor}
 					onClick={() => {
-						handleColorBoxClick(props._id, !props.selected);
+						handleColorBoxClick(props._id, !props.selected, props);
 					}}
 				>
 					<ColorText>{props.text}</ColorText>
 					{props.selected && <DoneIcon fontSize='1rem' />}
 				</Colorbox>
 				<IconWrapper
+					style={{ visibility: props._id ? 'visible' : 'hidden' }}
 					onClick={() => {
+						if (!props._id) return;
 						setSelectedCard({
 							_id: props._id,
 							color: props.color,
@@ -88,14 +95,46 @@ const LabelsPopover = (props) => {
 		);
 	};
 
+	const getBoardLabels = () => {
+		const boardLabels = [];
+		if (allLists) {
+			allLists.forEach((list) => {
+				if (list.cards) {
+					list.cards.forEach((c) => {
+						if (c.labels) {
+							c.labels.forEach((l) => {
+								if (!boardLabels.find((bl) => bl.text === l.text && bl.color === l.color)) {
+									const inThisCard = thisCard.labels.find(
+										(tl) => tl.text === l.text && tl.color === l.color
+									);
+									if (inThisCard) {
+										boardLabels.push({ ...inThisCard });
+									} else {
+										boardLabels.push({ ...l, _id: null, selected: false });
+									}
+								}
+							});
+						}
+					});
+				}
+			});
+		}
+		thisCard.labels.forEach((l) => {
+			if (!boardLabels.find((bl) => bl.text === l.text && bl.color === l.color)) {
+				boardLabels.push({ ...l });
+			}
+		});
+		return boardLabels;
+	};
+
 	const mainPage = (
 		<Container>
 			<SearchArea placeholder='Search labels...' />
 			<Title>Labels</Title>
-			{thisCard.labels.map((label) => {
+			{getBoardLabels().map((label, index) => {
 				return (
 					<LabelComponent
-						key={label._id}
+						key={label._id || index}
 						{...label}
 						arrowCallback={props.arrowCallback}
 						titleCallback={props.titleCallback}

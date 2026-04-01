@@ -116,6 +116,10 @@ const cardSchema = mongoose.Schema({
 			type: Boolean,
 			default: null,
 		},
+		image: {
+			type: String,
+			default: null,
+		},
 	},
 	checklists: [
 		{

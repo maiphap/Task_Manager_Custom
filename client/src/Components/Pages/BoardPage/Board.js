@@ -29,9 +29,13 @@ const Board = (props) => {
 		socket.on('update_board_request', (updatedLists) => {
 			dispatch(updateCardDragDrop(updatedLists));
 		});
+		socket.on('update_board_data', () => {
+			getLists(boardId, dispatch);
+		});
 
 		return () => {
 			socket.off('update_board_request');
+			socket.off('update_board_data');
 		};
 	}, [props.match.params.id, dispatch, boardId]);
 

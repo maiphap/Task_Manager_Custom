@@ -20,6 +20,7 @@ const initialState = {
 	cover: {
 		color: null,
 		isSizeOne: null,
+		image: null,
 	},
 	colors: [
 		{ bg: '#61bd4f', hbg: '#519839' },
@@ -232,6 +233,12 @@ const cardsSlice = createSlice({
 			const {color, isSizeOne} = action.payload;
 			state.cover.color = color;
 			state.cover.isSizeOne = isSizeOne;
+			state.cover.image = null;
+		},
+		updateCoverImage: (state, action) => {
+			state.cover.image = action.payload;
+			state.cover.color = null;
+			state.cover.isSizeOne = null;
 		},
 	},
 });
@@ -267,5 +274,6 @@ export const {
 	deleteAttachment,
 	updateAttachment,
 	updateCover,
+	updateCoverImage,
 } = cardsSlice.actions;
 export default cardsSlice.reducer;

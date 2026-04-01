@@ -810,12 +810,38 @@ const updateCover = async (cardId, listId, boardId, user, color, isSizeOne, call
 			errMessage: 'You dont have permission to update attachment of this card';
 		}
 
-		//Update date cover color
+		//Update cover color and clear image
 		card.cover.color = color;
 		card.cover.isSizeOne = isSizeOne;
+		card.cover.image = null;
 
 		await card.save();
 		return callback(false, { message: 'Success!' });
+	} catch (error) {
+		return callback({ errMessage: 'Something went wrong', details: error.message });
+	}
+};
+
+const uploadCoverImage = async (cardId, listId, boardId, user, imageUrl, callback) => {
+	try {
+		// Get models
+		const card = await cardModel.findById(cardId);
+		const list = await listModel.findById(listId);
+		const board = await boardModel.findById(boardId);
+
+		// Validate owner
+		const validate = await helperMethods.validateCardOwners(card, list, board, user, false);
+		if (!validate) {
+			return callback({ errMessage: 'You dont have permission to update this card' });
+		}
+
+		// Update cover with image, clear color
+		card.cover.image = imageUrl;
+		card.cover.color = null;
+		card.cover.isSizeOne = null;
+
+		await card.save();
+		return callback(false, { imageUrl: imageUrl });
 	} catch (error) {
 		return callback({ errMessage: 'Something went wrong', details: error.message });
 	}
@@ -847,4 +873,5 @@ module.exports = {
 	deleteAttachment,
 	updateAttachment,
 	updateCover,
+	uploadCoverImage,
 };

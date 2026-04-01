@@ -10,10 +10,14 @@ const boardRoute = require('./Routes/boardRoute');
 const listRoute = require('./Routes/listRoute');
 const cardRoute = require('./Routes/cardRoute');
 const auth = require('./Middlewares/auth');
+const cronService = require('./Services/cronService');
 
 dotenv.config();
 const app = express();
 const server = http.createServer(app);
+
+// Kích hoạt Cron-job gửi email
+cronService.initCronJobs();
 
 // Cấu hình CORS chi tiết
 const allowedOrigins = [
@@ -105,6 +109,10 @@ io.on('connection', (socket) => {
 	socket.on('move_list', (data) => {
 		// Phát sự kiện cập nhật cho những người khác trong cùng board
 		socket.to(data.boardId).emit('update_board_request', data.updatedLists);
+	});
+
+	socket.on('board_updated', (boardId) => {
+		socket.to(boardId).emit('update_board_data');
 	});
 
 	socket.on('disconnect', () => {

@@ -49,7 +49,24 @@ export default function EditCard(props) {
 		<div style={{ position: 'relative' }}>
 			<Modal open={props.open} onClose={props.callback} style={MODAL_STYLE} disableEnforceFocus>
 				<Container>
-					<CoverContainer color={!thisCard.pending ? thisCard.cover.color : null}>
+					<CoverContainer
+						color={!thisCard.pending ? (thisCard.cover.image ? null : thisCard.cover.color) : null}
+						style={
+							!thisCard.pending && thisCard.cover.image
+								? {
+										display: 'block',
+										backgroundImage: `url(${thisCard.cover.image})`,
+										backgroundSize: 'cover',
+										backgroundPosition: 'center',
+										minHeight: '10rem',
+										margin: '-0.5rem 0rem 0rem -0.25rem',
+										borderTopLeftRadius: '3px',
+										borderTopRightRadius: '3px',
+										position: 'relative',
+								  }
+								: {}
+						}
+					>
 						<CoverButtonWrapper>
 							<IconButton title='Cover' icon={<CoverIcon fontSize='small' />} />
 						</CoverButtonWrapper>

@@ -1,9 +1,11 @@
 const cardController = require('../Controllers/cardController');
 const express = require('express');
 const router = express.Router();
+const { upload } = require('../Middlewares/upload');
 
-router.delete('/:boardId/:listId/:cardId/delete-card', cardController.deleteById);
+router.post('/:boardId/:listId/:cardId/upload-cover', upload.single('coverImage'), cardController.uploadCoverImage);
 router.put('/:boardId/:listId/:cardId/update-cover', cardController.updateCover);
+router.delete('/:boardId/:listId/:cardId/delete-card', cardController.deleteById);
 router.put('/:boardId/:listId/:cardId/:attachmentId/update-attachment', cardController.updateAttachment);
 router.delete('/:boardId/:listId/:cardId/:attachmentId/delete-attachment', cardController.deleteAttachment);
 router.post('/:boardId/:listId/:cardId/add-attachment', cardController.addAttachment);

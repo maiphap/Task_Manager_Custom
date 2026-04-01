@@ -28,8 +28,8 @@ const DatePopover = (props) => {
 			key: 'selection',
 		},
 	]);
-	const [enableStartDate, setEnableStartDate] = useState(card.date.startDate != null ? card.date.startDate : false);
-	const [enableDueDate, setEnableDueDate] = useState(card.date.dueDate != null ? card.date.dueDate : false);
+	const [enableStartDate, setEnableStartDate] = useState(card.date.startDate != null);
+	const [enableDueDate, setEnableDueDate] = useState(card.date.dueDate != null);
 	const [focusStart, setFocusStart] = useState(false);
 	const [focusDue, setFocusDue] = useState(false);
 	const [time, setTime] = useState(
