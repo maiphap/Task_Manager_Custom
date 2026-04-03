@@ -35,6 +35,17 @@ const userSchema = mongoose.Schema({
 		enum: ['user', 'admin'],
 		default: 'user',
 	},
+	isBanned: {
+		type: Boolean,
+		default: false,
+	},
+	loginAttempts: {
+		type: Number,
+		default: 0,
+	},
+	lockUntil: {
+		type: Date,
+	},
 });
 
 module.exports = mongoose.model('user', userSchema);

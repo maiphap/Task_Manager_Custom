@@ -81,6 +81,13 @@ const boardSchema = mongoose.Schema(
 			type: String,
 			default: '',
 		},
+		isDeleted: {
+			type: Boolean,
+			default: false,
+		},
+		deletedAt: {
+			type: Date,
+		},
 	},
 	{ timestamps: true }
 );

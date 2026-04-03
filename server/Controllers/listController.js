@@ -7,10 +7,10 @@ const create = async (req, res) => {
 	if (!(title && boardId)) return res.status(400).send({ errMessage: 'Title cannot be empty' });
 
 	// Validate whether boardId is in the user's boards or not
-	const validate = req.user.boards.filter((board) => board === boardId);
-	if (!validate)
+	const validate = req.user.boards.filter((board) => board.toString() === boardId);
+	if (validate.length === 0)
 		return res
-			.status(400)
+			.status(403)
 			.send({ errMessage: 'You can not add a list to the board, you are not a member or owner!' });
 
 	// Call the service to add new list
@@ -26,9 +26,9 @@ const getAll = async (req, res) => {
 
 	// Validate whether boardId is in the user's board or not
 
-	const validate = req.user.boards.filter((board) => board === boardId);
-	if (!validate)
-		return res.status(400).send({ errMessage: 'You cannot get lists, because you are not owner of this lists!' });
+	const validate = req.user.boards.filter((board) => board.toString() === boardId);
+	if (validate.length === 0)
+		return res.status(403).send({ errMessage: 'You cannot get lists, because you are not owner of this lists!' });
 
 	// Call the service to get all lists whose owner id matches the boardId
 	await listService.getAll(boardId, (err, result) => {
@@ -61,8 +61,8 @@ const updateCardOrder = async (req, res) => {
 		return res.status(400).send({ errMessage: 'All parameters not provided' });
 
 	// Validate the owner of board
-	const validate = user.boards.filter((board) => board === boardId);
-	if (!validate) return res.status(403).send({ errMessage: 'You cannot edit the board that you hasnt' });
+	const validate = user.boards.filter((board) => board.toString() === boardId);
+	if (validate.length === 0) return res.status(403).send({ errMessage: 'You cannot edit the board that you hasnt' });
 
 	// Call the service
 	await listService.updateCardOrder(boardId, sourceId, destinationId, destinationIndex, cardId, user, (err, result) => {
@@ -81,8 +81,8 @@ const updateListOrder = async (req, res) => {
 		return res.status(400).send({ errMessage: 'All parameters not provided' });
 
 	// Validate the owner of board
-	const validate = user.boards.filter((board) => board === boardId);
-	if (!validate) return res.status(403).send({ errMessage: 'You cannot edit the board that you hasnt' });
+	const validate = user.boards.filter((board) => board.toString() === boardId);
+	if (validate.length === 0) return res.status(403).send({ errMessage: 'You cannot edit the board that you hasnt' });
 
 	// Call the service
 	await listService.updateListOrder(boardId, sourceIndex, destinationIndex, listId, (err, result) => {

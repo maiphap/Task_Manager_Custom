@@ -31,6 +31,10 @@ const login = async (req, res) => {
   await userService.login(email, (err, result) => {
     if (err) return res.status(400).send(err);
 
+    if (result.isBanned) {
+        return res.status(403).send({ errMessage: "Your account has been banned by administrators!" });
+    }
+
     const hashedPassword = result.password;
     if (!bcrypt.compareSync(password, hashedPassword))
       return res
@@ -146,6 +150,9 @@ const googleLogin = async (req, res) => {
         });
       } else {
         // User exists, login
+        if (result.isBanned) {
+            return res.status(403).send({ errMessage: "Your account has been banned by administrators!" });
+        }
         result.token = auth.generateToken(result._id.toString(), result.email);
         result.password = undefined;
         result.__v = undefined;

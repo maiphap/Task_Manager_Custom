@@ -12,6 +12,7 @@ import FreeRoute from "./Utils/FreeRoute";
 import Board from "./Components/Pages/BoardPage/Board";
 import AdminRoute from "./Utils/AdminRoute";
 import AdminDashboard from "./Components/Pages/AdminPage/AdminDashboard";
+import SystemBanner from "./Components/SystemBanner";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -20,6 +21,7 @@ const App = () => {
   }, [dispatch]);
   return (
     <BrowserRouter>
+      <SystemBanner />
       <Alert />
       <Switch>
         <ProtectedRoute exact path="/boards" component={Boards} />

@@ -9,6 +9,7 @@ const userRoute = require('./Routes/userRoute');
 const boardRoute = require('./Routes/boardRoute');
 const listRoute = require('./Routes/listRoute');
 const cardRoute = require('./Routes/cardRoute');
+const adminRoute = require('./Routes/adminRoute');
 const auth = require('./Middlewares/auth');
 const cronService = require('./Services/cronService');
 
@@ -53,6 +54,7 @@ app.use(
 			{ url: '/user/login', method: ['POST'] },
 			{ url: '/user/register', method: ['POST'] },
 			{ url: '/user/google-login', method: ['POST'] },
+			{ url: '/admin/settings/notification', method: ['GET'] },
 			{ url: '/', method: ['GET'] },
 		],
 	})
@@ -80,6 +82,7 @@ app.use('/user', userRoute);
 app.use('/board', boardRoute);
 app.use('/list', listRoute);
 app.use('/card', cardRoute);
+app.use('/admin', adminRoute);
 
 app.get('/', (req, res) => {
 	res.send('Task Manager Backend is running!');
@@ -93,8 +96,12 @@ const io = new Server(server, {
 	},
 });
 
+// Đếm số lượng user online
+let onlineUsers = 0;
+
 io.on('connection', (socket) => {
-	// console.log('A user connected:', socket.id);
+	onlineUsers++;
+	io.emit('online_users_count', onlineUsers);
 
 	socket.on('join_board', (boardId) => {
 		socket.join(boardId);
@@ -116,7 +123,8 @@ io.on('connection', (socket) => {
 	});
 
 	socket.on('disconnect', () => {
-		// console.log('A user disconnected:', socket.id);
+		onlineUsers--;
+		io.emit('online_users_count', onlineUsers);
 	});
 });
 
