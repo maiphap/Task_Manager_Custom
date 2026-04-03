@@ -17,6 +17,7 @@ const initialState = {
   smallPostfix:
     "?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=Mnw3MDY2fDB8MXxjb2xsZWN0aW9ufDJ8MzE3MDk5fHx8fHwyfHwxNjM2NjUzNDgz&ixlib=rb-1.2.1&q=80&w=400",
   creating: false,
+  invitations: [],
 };
 
 const boardsSlice = createSlice({
@@ -45,7 +46,13 @@ const boardsSlice = createSlice({
     },
     reset:(state)=>{
       state=initialState;
-    }
+    },
+    setInvitations: (state, action) => {
+      state.invitations = action.payload;
+    },
+    removeInvitation: (state, action) => {
+      state.invitations = state.invitations.filter(invite => invite._id !== action.payload);
+    },
   },
 });
 
@@ -56,6 +63,8 @@ export const {
   startCreatingBoard,
   successCreatingBoard,
   failCreatingBoard,
-  reset
+  reset,
+  setInvitations,
+  removeInvitation
 } = boardsSlice.actions;
 export default boardsSlice.reducer;

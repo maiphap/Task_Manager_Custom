@@ -107,3 +107,27 @@ export const AddBoard = styled(Board)`
     transition: 400ms ease-in;
   }
 `;
+
+export const BoardMemberWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+  margin-top: auto;
+  gap: 2px;
+`;
+
+export const BoardMemberAvatar = styled.div`
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: ${props => props.color || '#4f46e5'};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: white;
+  border: 1px solid white;
+`;

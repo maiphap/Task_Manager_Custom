@@ -67,8 +67,13 @@ const boardSchema = mongoose.Schema(
 					default: 'member',
 				},
 				color: {
-					type:String,
-				}
+					type: String,
+				},
+				status: {
+					type: String,
+					enum: ['joined', 'pending'],
+					default: 'joined',
+				},
 			},
 		],
 		lists: [

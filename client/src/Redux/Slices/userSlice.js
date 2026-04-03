@@ -59,9 +59,12 @@ export const userSlice = createSlice({
     fetchingFinish: (state) => {
       state.loading = false;
     },
-    addNewBoard: (state,action) => {
+    addNewBoard: (state, action) => {
       state.userInfo.boards.unshift(action.payload);
-    }
+    },
+    updateUserInfo: (state, action) => {
+      state.userInfo = { ...state.userInfo, ...action.payload };
+    },
   },
 });
 
@@ -77,6 +80,7 @@ export const {
   logout,
   fetchingStart,
   fetchingFinish,
-  addNewBoard
+  addNewBoard,
+  updateUserInfo
 } = userSlice.actions;
 export default userSlice.reducer;

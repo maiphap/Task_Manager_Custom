@@ -37,6 +37,29 @@ export const MemberWrapper = styled.div`
 	margin-left: 0.5rem;
 `;
 
+export const RemoveIcon = styled.div`
+	position: absolute;
+	top: -5px;
+	right: -5px;
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	background-color: #ef4444;
+	color: white;
+	display: none;
+	align-items: center;
+	justify-content: center;
+	font-size: 10px;
+	font-weight: 900;
+	border: 1px solid white;
+	z-index: 100;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+	&:hover {
+		background-color: #dc2626;
+		transform: scale(1.2);
+	}
+`;
+
 export const MemberAvatar = styled.div`
 	width: 2rem;
 	height: 2rem;
@@ -51,9 +74,15 @@ export const MemberAvatar = styled.div`
 	cursor: pointer;
 	border: 2px solid transparent;
 	transition: 200ms ease;
+	position: relative;
+	opacity: ${(props) => (props.isPending ? '0.6' : '1')};
+	
 	&:hover {
-		filter: brightness(90%);
+		filter: brightness(95%);
 		border: 2px solid white;
+		${RemoveIcon} {
+			display: flex;
+		}
 	}
 `;
 

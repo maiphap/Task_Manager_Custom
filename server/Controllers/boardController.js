@@ -116,6 +116,41 @@ const getAllAdmin = async (req, res) => {
 	});
 };
 
+const acceptInvitation = async (req, res) => {
+	const { boardId } = req.params;
+	const userId = req.user.id;
+	await boardService.acceptInvitation(boardId, userId, (err, result) => {
+		if (err) return res.status(400).send(err);
+		return res.status(200).send(result);
+	});
+};
+
+const rejectInvitation = async (req, res) => {
+	const { boardId } = req.params;
+	const userId = req.user.id;
+	await boardService.rejectInvitation(boardId, userId, (err, result) => {
+		if (err) return res.status(400).send(err);
+		return res.status(200).send(result);
+	});
+};
+
+const getInvitations = async (req, res) => {
+	const userId = req.user.id;
+	await boardService.getInvitations(userId, (err, result) => {
+		if (err) return res.status(400).send(err);
+		return res.status(200).send(result);
+	});
+};
+
+const removeMember = async (req, res) => {
+	const { boardId, userId } = req.params;
+	const requesterId = req.user.id;
+	await boardService.removeMember(boardId, userId, requesterId, (err, result) => {
+		if (err) return res.status(400).send(err);
+		return res.status(200).send(result);
+	});
+};
+
 module.exports = {
 	create,
 	getAll,
@@ -125,5 +160,9 @@ module.exports = {
 	updateBoardDescription,
 	updateBackground,
 	addMember,
+	acceptInvitation,
+	rejectInvitation,
+	getInvitations,
+	removeMember,
 	getAllAdmin,
 };

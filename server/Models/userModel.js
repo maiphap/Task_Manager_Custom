@@ -46,6 +46,6 @@ const userSchema = mongoose.Schema({
 	lockUntil: {
 		type: Date,
 	},
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model('user', userSchema);

@@ -168,3 +168,32 @@ export const getUserFromEmail = async (email, dispatch, boardTitle) => {
     return null;
   }
 };
+
+export const updateProfile = async (body, dispatch) => {
+  dispatch(fetchingStart());
+  try {
+    const res = await axios.patch(baseUrl + "update-profile", body);
+    const { user, message } = res.data;
+    const { updateUserInfo } = require("../Redux/Slices/userSlice");
+    dispatch(updateUserInfo(user));
+    dispatch(
+      openAlert({
+        message,
+        severity: "success",
+      })
+    );
+    dispatch(fetchingFinish());
+    return true;
+  } catch (error) {
+    dispatch(
+      openAlert({
+        message: error?.response?.data?.errMessage
+          ? error.response.data.errMessage
+          : error.message,
+        severity: "error",
+      })
+    );
+    dispatch(fetchingFinish());
+    return false;
+  }
+};

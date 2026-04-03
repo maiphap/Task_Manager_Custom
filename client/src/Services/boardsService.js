@@ -7,10 +7,63 @@ import {
   successCreatingBoard,
   failCreatingBoard,
   startCreatingBoard,
+  setInvitations,
+  removeInvitation,
 } from "../Redux/Slices/boardsSlice";
 import { addNewBoard } from "../Redux/Slices/userSlice";
 import { setLoading, successFetchingBoard, updateTitle } from "../Redux/Slices/boardSlice";
+
 const baseUrl = process.env.REACT_APP_API_URL + '/board';
+
+export const getInvitations = async (dispatch) => {
+  try {
+    const res = await axios.get(baseUrl + "/invitations");
+    dispatch(setInvitations(res.data));
+  } catch (error) {
+    console.error("Error fetching invitations:", error);
+  }
+};
+
+export const acceptInvite = async (boardId, dispatch) => {
+  try {
+    const res = await axios.patch(baseUrl + `/${boardId}/accept-invite`);
+    dispatch(removeInvitation(boardId));
+    dispatch(getBoards(true, dispatch)); // Refresh boards list
+    dispatch(
+      openAlert({
+        message: res.data.message,
+        severity: "success",
+      })
+    );
+  } catch (error) {
+    dispatch(
+      openAlert({
+        message: error?.response?.data?.errMessage ? error.response.data.errMessage : error.message,
+        severity: "error",
+      })
+    );
+  }
+};
+
+export const rejectInvite = async (boardId, dispatch) => {
+  try {
+    const res = await axios.patch(baseUrl + `/${boardId}/reject-invite`);
+    dispatch(removeInvitation(boardId));
+    dispatch(
+      openAlert({
+        message: res.data.message,
+        severity: "success",
+      })
+    );
+  } catch (error) {
+    dispatch(
+      openAlert({
+        message: error?.response?.data?.errMessage ? error.response.data.errMessage : error.message,
+        severity: "error",
+      })
+    );
+  }
+};
 
 export const getBoards = async (fromDropDown, dispatch) => {
   if (!fromDropDown) dispatch(startFetchingBoards());

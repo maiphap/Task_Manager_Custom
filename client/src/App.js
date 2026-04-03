@@ -13,6 +13,7 @@ import Board from "./Components/Pages/BoardPage/Board";
 import AdminRoute from "./Utils/AdminRoute";
 import AdminDashboard from "./Components/Pages/AdminPage/AdminDashboard";
 import SystemBanner from "./Components/SystemBanner";
+import Profile from "./Components/Pages/ProfilePage/Profile";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -27,6 +28,7 @@ const App = () => {
         <ProtectedRoute exact path="/boards" component={Boards} />
         <ProtectedRoute exact path="/board/:id" component={Board} />
         <AdminRoute exact path="/admin" component={AdminDashboard} />
+        <ProtectedRoute exact path="/profile" component={Profile} />
         <FreeRoute exact path="/login" component={Login} />
         <FreeRoute exact path="/register" component={Register} />
         <FreeRoute exact path="/" component={Index} />

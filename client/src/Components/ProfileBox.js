@@ -10,23 +10,33 @@ import Logout from '@mui/icons-material/Logout';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../Redux/Slices/userSlice';
 import { reset } from '../Redux/Slices/boardsSlice';
+import { useHistory } from 'react-router-dom';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import Divider from '@mui/material/Divider';
+import Typography from '@mui/material/Typography';
 
 export default function ProfileBox() {
 	const [anchorEl, setAnchorEl] = React.useState(null);
 	const dispatch = useDispatch();
+	const history = useHistory();
 	const open = Boolean(anchorEl);
-	const name = useSelector((state) => state.user.userInfo.name);
-	const color = useSelector((state) => state.user.userInfo.color);
+	const user = useSelector((state) => state.user.userInfo);
+	const name = user.name;
+	const surname = user.surname;
+	const email = user.email;
+	const color = user.color;
+
 	const handleClick = (event) => {
 		setAnchorEl(event.currentTarget);
 	};
 	const handleClose = () => {
 		setAnchorEl(null);
 	};
+
 	return (
 		<React.Fragment>
 			<Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
-				<Tooltip title='Logout'>
+				<Tooltip title='Account settings'>
 					<IconButton onClick={handleClick} size='small' sx={{ ml: 2 }}>
 						<Avatar sx={{ width: 32, height: 32, bgcolor: color, fontSize: '0.875rem', fontWeight: '800' }}>
 							{name[0]}
@@ -45,6 +55,8 @@ export default function ProfileBox() {
 						overflow: 'visible',
 						filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
 						mt: 1.5,
+						padding: '0.5rem 0',
+						minWidth: '200px',
 						'& .MuiAvatar-root': {
 							width: 32,
 							height: 32,
@@ -68,6 +80,25 @@ export default function ProfileBox() {
 				transformOrigin={{ horizontal: 'right', vertical: 'top' }}
 				anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
 			>
+				<Box sx={{ px: 2, py: 1 }}>
+					<Typography variant='subtitle1' sx={{ fontWeight: '700', color: '#1e293b' }}>
+						{name} {surname}
+					</Typography>
+					<Typography variant='body2' sx={{ color: '#64748b', fontSize: '0.8rem' }}>
+						{email}
+					</Typography>
+				</Box>
+				<Divider sx={{ my: 1 }} />
+				<MenuItem
+					onClick={() => {
+						history.push('/profile');
+					}}
+				>
+					<ListItemIcon>
+						<AccountCircleIcon fontSize='small' />
+					</ListItemIcon>
+					Profile
+				</MenuItem>
 				<MenuItem
 					onClick={() => {
 						dispatch(reset);

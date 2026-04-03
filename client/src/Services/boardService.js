@@ -172,7 +172,29 @@ export const boardMemberAdd = async (boardId, members, dispatch) => {
     await dispatch(addMembers(result.data));
     dispatch(
       openAlert({
-        message: "Members are added to this board successfully",
+        message: "Invitations are sent to users successfully",
+        severity: "success",
+      }),
+    );
+  } catch (error) {
+    dispatch(
+      openAlert({
+        message: error?.response?.data?.errMessage
+          ? error.response.data.errMessage
+          : error.message,
+        severity: "error",
+      }),
+    );
+  }
+};
+
+export const boardMemberRemove = async (boardId, userId, dispatch) => {
+  try {
+    const res = await axios.delete(`${boardRoute}/${boardId}/member/${userId}`);
+    await dispatch(addMembers(res.data));
+    dispatch(
+      openAlert({
+        message: "Member removed from this board successfully",
         severity: "success",
       }),
     );

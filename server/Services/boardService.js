@@ -4,7 +4,7 @@ const userModel = require('../Models/userModel');
 
 const create = async (req, callback) => {
 	try {
-		const { title, backgroundImageLink, members } = req.body;
+		const { title, backgroundImageLink } = req.body;
 		// Create and save new board
 		let newBoard = boardModel({ title, backgroundImageLink });
 		newBoard.save();
@@ -14,7 +14,7 @@ const create = async (req, callback) => {
 		user.boards.unshift(newBoard.id);
 		await user.save();
 
-		// Add user to members of this board
+		// Add user to members of this board as joined owner
 		let allMembers = [];
 		allMembers.push({
 			user: user.id,
@@ -23,31 +23,8 @@ const create = async (req, callback) => {
 			email: user.email,
 			color: user.color,
 			role: 'owner',
+			status: 'joined',
 		});
-
-		// Save newBoard's id to boards of members and,
-		// Add ids of members to newBoard
-		await Promise.all(
-			members.map(async (member) => {
-				const newMember = await userModel.findOne({ email: member.email });
-				newMember.boards.push(newBoard._id);
-				await newMember.save();
-				allMembers.push({
-					user: newMember._id,
-					name: newMember.name,
-					surname: newMember.surname,
-					email: newMember.email,
-					color: newMember.color,
-					role: 'member',
-				});
-				//Add to board activity
-				newBoard.activity.push({
-					user: user.id,
-					name: user.name,
-					action: `added user '${newMember.name}' to this board`,
-				});
-			})
-		);
 
 		// Add created activity to activities of this board
 		newBoard.activity.unshift({ user: user._id, name: user.name, action: 'created this board', color: user.color });
@@ -180,8 +157,10 @@ const addMember = async (id, members, user, callback) => {
 			members.map(async (member) => {
 				const newMember = await userModel.findOne({ email: member.email });
 				if (newMember) {
-					newMember.boards.push(board._id);
-					await newMember.save();
+					// Check if already a member (pending or joined)
+					const existingMember = board.members.find(m => m.user.toString() === newMember._id.toString());
+					if (existingMember) return;
+
 					board.members.push({
 						user: newMember._id,
 						name: newMember.name,
@@ -189,35 +168,18 @@ const addMember = async (id, members, user, callback) => {
 						email: newMember.email,
 						color: newMember.color,
 						role: 'member',
+						status: 'pending', // Set as pending, user needs to accept
 					});
 					//Add to board activity
 					board.activity.push({
 						user: user.id,
 						name: user.name,
-						action: `added user '${newMember.name}' to this board`,
-						color: user.color,
-					});
-				} else {
-					// Handle invited users who are not registered yet
-					// We just skip adding them to the board.members list for now
-					// because they need to register first.
-					// Alternatively, we could add them without a user ID.
-					// For now, let's just log it or add them as a "pending" member.
-					board.members.push({
-						name: member.name || member.email.split('@')[0],
-						surname: member.surname || '(Invited)',
-						email: member.email,
-						color: member.color || '#cccccc',
-						role: 'member',
-					});
-					//Add to board activity
-					board.activity.push({
-						user: user.id,
-						name: user.name,
-						action: `invited user '${member.email}' to this board`,
+						action: `invited user '${newMember.name}' to this board`,
 						color: user.color,
 					});
 				}
+				// Skip if user not found as per new requirement:
+				// "chưa được hiển thị vào boards chỉ những user đã vào boards mới được hiển thị"
 			})
 		);
 		// Save changes
@@ -226,6 +188,110 @@ const addMember = async (id, members, user, callback) => {
 		return callback(false, board.members);
 	} catch (error) {
 		return callback({ message: 'Something went wrong', details: error.message });
+	}
+};
+
+const acceptInvitation = async (boardId, userId, callback) => {
+	try {
+		const board = await boardModel.findById(boardId);
+		if (!board) return callback({ errMessage: 'Board not found!' });
+
+		const memberIndex = board.members.findIndex(m => m.user.toString() === userId && m.status === 'pending');
+		if (memberIndex === -1) return callback({ errMessage: 'Invitation not found or already accepted!' });
+
+		board.members[memberIndex].status = 'joined';
+		
+		const user = await userModel.findById(userId);
+		if (!user.boards.includes(boardId)) {
+			user.boards.unshift(boardId);
+			await user.save();
+		}
+
+		board.activity.unshift({
+			user: userId,
+			name: user.name,
+			action: 'accepted the invitation and joined the board',
+			color: user.color,
+		});
+
+		await board.save();
+		return callback(false, { message: 'Invitation accepted!' });
+	} catch (error) {
+		return callback({ errMessage: error.message });
+	}
+};
+
+const rejectInvitation = async (boardId, userId, callback) => {
+	try {
+		const board = await boardModel.findById(boardId);
+		if (!board) return callback({ errMessage: 'Board not found!' });
+
+		board.members = board.members.filter(m => !(m.user.toString() === userId && m.status === 'pending'));
+		await board.save();
+		return callback(false, { message: 'Invitation rejected!' });
+	} catch (error) {
+		return callback({ errMessage: error.message });
+	}
+};
+
+const getInvitations = async (userId, callback) => {
+	try {
+		const boards = await boardModel.find({
+			'members': {
+				$elemMatch: {
+					user: userId,
+					status: 'pending'
+				}
+			}
+		}).select('title backgroundImageLink isImage members');
+		
+		return callback(false, boards);
+	} catch (error) {
+		return callback({ errMessage: error.message });
+	}
+};
+
+const removeMember = async (boardId, userId, requesterId, callback) => {
+	try {
+		const board = await boardModel.findById(boardId);
+		if (!board) return callback({ errMessage: 'Board not found!' });
+
+		// Check if requester is owner
+		const requester = board.members.find(m => m.user.toString() === requesterId);
+		if (!requester || requester.role !== 'owner') {
+			return callback({ errMessage: 'Only board owner can remove members!' });
+		}
+
+		// Find member to remove
+		const memberIndex = board.members.findIndex(m => m.user.toString() === userId);
+		if (memberIndex === -1) return callback({ errMessage: 'Member not found in this board!' });
+
+		const memberToRemove = board.members[memberIndex];
+
+		// If member was joined, remove board from their user.boards
+		if (memberToRemove.status === 'joined') {
+			const user = await userModel.findById(userId);
+			if (user) {
+				user.boards = user.boards.filter(b => b.toString() !== boardId);
+				await user.save();
+			}
+		}
+
+		// Remove from board members
+		board.members.splice(memberIndex, 1);
+
+		// Add activity
+		board.activity.unshift({
+			user: requesterId,
+			name: requester.name,
+			action: `removed member '${memberToRemove.name}' from this board`,
+			color: requester.color,
+		});
+
+		await board.save();
+		return callback(false, board.members);
+	} catch (error) {
+		return callback({ errMessage: error.message });
 	}
 };
 
@@ -252,5 +318,9 @@ module.exports = {
 	updateBoardDescription,
 	updateBackground,
 	addMember,
+	acceptInvitation,
+	rejectInvitation,
+	getInvitations,
+	removeMember,
 	getAllAdmin,
 };

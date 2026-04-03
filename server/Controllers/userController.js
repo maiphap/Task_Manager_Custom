@@ -187,6 +187,15 @@ const getAdminStats = async (req, res) => {
   });
 };
 
+const updateProfile = async (req, res) => {
+  const userId = req.user.id;
+  const { name, surname, color } = req.body;
+  await userService.updateProfile(userId, { name, surname, color }, (err, result) => {
+    if (err) return res.status(400).send(err);
+    return res.status(200).send({ message: "Profile updated successfully!", user: result });
+  });
+};
+
 module.exports = {
   register,
   login,
@@ -196,4 +205,5 @@ module.exports = {
   getAllUsers,
   deleteUser,
   getAdminStats,
+  updateProfile,
 };

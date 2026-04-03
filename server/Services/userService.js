@@ -124,6 +124,16 @@ const getAdminStats = async (callback) => {
   }
 };
 
+const updateProfile = async (id, body, callback) => {
+  try {
+    const user = await userModel.findByIdAndUpdate(id, body, { new: true }).select("-password");
+    if (user) return callback(null, { ...user.toJSON() });
+    else return callback({ errMessage: "User not found!" });
+  } catch (error) {
+    return callback({ errMessage: error.message });
+  }
+};
+
 module.exports = {
   register,
   login,
@@ -133,4 +143,5 @@ module.exports = {
   getAllUsers,
   deleteUserByAdmin,
   getAdminStats,
+  updateProfile,
 };

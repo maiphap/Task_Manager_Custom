@@ -9,6 +9,7 @@ router.post("/login", userController.login);
 router.get("/get-user", auth.verifyToken, userController.getUser);
 router.post("/get-user-with-email", auth.verifyToken, userController.getUserWithMail);
 router.post("/google-login", userController.googleLogin);
+router.patch("/update-profile", auth.verifyToken, userController.updateProfile);
 
 // Admin Routes
 router.get("/admin/users", auth.verifyToken, isAdmin, userController.getAllUsers);

@@ -11,19 +11,35 @@ import InviteMembers from '../../../../Modals/EditCardModal/Popovers/InviteMembe
 import Tooltip from '@mui/material/Tooltip';
 import Zoom from '@mui/material/Zoom';
 
+import { boardMemberRemove } from '../../../../../Services/boardService';
+
 const TopBar = () => {
 	const board = useSelector((state) => state.board);
+	const user = useSelector((state) => state.user.userInfo);
 	const { members } = board;
 	const [currentTitle, setCurrentTitle] = useState(board.title);
 	const [showDrawer, setShowDrawer] = useState(false);
 	const [invitePopover, setInvitePopover] = React.useState(null);
 	const dispatch = useDispatch();
+
+	const isOwner = members.find(m => 
+		(String(m.user) === String(user?._id) || String(m.user) === String(user?.id))
+	)?.role === 'owner';
+
 	useEffect(() => {
 		if (!board.loading) setCurrentTitle(board.title);
 	}, [board.loading, board.title]);
+
 	const handleTitleChange = () => {
 		boardTitleUpdate(currentTitle, board.id, dispatch);
 	};
+
+	const handleRemoveMember = (memberId) => {
+		if (window.confirm('Are you sure you want to remove this member?')) {
+			boardMemberRemove(board.id, memberId, dispatch);
+		}
+	};
+
 	return (
 		<style.TopBar>
 			<style.LeftWrapper>
@@ -55,20 +71,31 @@ const TopBar = () => {
 					onBlur={handleTitleChange}
 				/>
 				<style.MemberWrapper>
-					{members.map((member) => (
-						<Tooltip
-							key={member.user}
-							TransitionComponent={Zoom}
-							title={`${member.name} ${member.surname}`}
-							size='small'
-							placement='top'
-							arrow
-						>
-							<style.MemberAvatar color={member.color}>
-								{member.name.toString()[0].toUpperCase()}
-							</style.MemberAvatar>
-						</Tooltip>
-					))}
+					{members
+						.map((member) => (
+							<Tooltip
+								key={member.user}
+								TransitionComponent={Zoom}
+								title={`${member.name} ${member.surname} ${member.status === 'pending' ? '(Invited)' : ''}`}
+								size='small'
+								placement='top'
+								arrow
+							>
+								<style.MemberAvatar color={member.color} isPending={member.status === 'pending'}>
+									{member.name.toString()[0].toUpperCase()}
+									{isOwner && String(member.user) !== String(user?._id) && String(member.user) !== String(user?.id) && (
+										<style.RemoveIcon 
+											onClick={(e) => {
+												e.stopPropagation();
+												handleRemoveMember(member.user);
+											}}
+										>
+											×
+										</style.RemoveIcon>
+									)}
+								</style.MemberAvatar>
+							</Tooltip>
+						))}
 				</style.MemberWrapper>
 			</style.LeftWrapper>
 
